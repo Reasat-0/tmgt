@@ -3,7 +3,7 @@ import { HTTPResponseStatusType } from './httpStatusCodes.js';
 type generateResponseType = {
   statusCode: HTTPResponseStatusType;
   message: string;
-  success: string;
+  success: string | boolean;
   data?: unknown;
 };
 export const generateResponse = (params: generateResponseType) => {
