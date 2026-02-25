@@ -1,9 +1,10 @@
 import { Router } from 'express';
 import { getAllUsers } from '../controller/userController.js';
+import { authVefifierMiddleware } from '../middleware/authMiddleware.js';
 
 const router = Router();
 
-router.get('/', getAllUsers);
+router.get('/', authVefifierMiddleware, getAllUsers);
 // router.post('/', createUser);
 
 export default router;
