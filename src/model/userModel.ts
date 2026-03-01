@@ -21,7 +21,7 @@ export const userModel = {
     return result.rows[0] || null;
   },
 
-  createUser: async (user: User): Promise<User> => {
+  create: async (user: User): Promise<User> => {
     const insertQuery = `INSERT INTO users (name, email, password_hash, profile_pic) 
   VALUES ($1, $2, $3, $4) RETURNING *`;
     const result = await query(insertQuery, [

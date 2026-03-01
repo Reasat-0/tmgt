@@ -1,14 +1,14 @@
-import {Pool} from 'pg';
+import { Pool } from 'pg';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false
-    }
-})
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+});
 
 // Connection Stauts showing
 pool.connect((err, client, release) => {
@@ -19,4 +19,4 @@ pool.connect((err, client, release) => {
   release();
 });
 
-export const query = (text: string, params?: any[]) => pool.query(text, params)
+export const query = (text: string, params?: any[]) => pool.query(text, params);

@@ -29,7 +29,7 @@ export const register = async (req: Request, res: Response) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // Save to database
-    const newUser = await userModel.createUser({
+    const newUser = await userModel.create({
       name,
       email,
       password_hash: hashedPassword,

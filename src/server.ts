@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import userRoutes from './routes/userRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import tripRoutes from './routes/tripRoutes.js';
 dotenv.config();
 
 const app: Application = express();
@@ -14,6 +15,7 @@ app.use(express.json());
 // Routes
 app.use('/api/user', userRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/trip', tripRoutes);
 app.use('/', (req, res) => {
   res.send('Welcome to the Tour Manager API');
 });

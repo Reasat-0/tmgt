@@ -6,8 +6,12 @@ import {
 } from '../utils/httpStatusCodes.js';
 import { generateResponse } from '../utils/response.js';
 import jwt from 'jsonwebtoken';
-interface AuthRequest extends Request {
-  user?: unknown;
+
+export interface AuthRequest extends Request {
+  user?: {
+    id: number;
+    email: string;
+  };
 }
 
 export const authVefifierMiddleware = (
@@ -34,7 +38,9 @@ export const authVefifierMiddleware = (
     console.log(mainToken);
     const decoded = jwt.verify(mainToken, process.env.JWT_SECRET as string);
 
-    req.user = decoded;
+    console.log('----', decoded);
+
+    req.user = { id: (decoded as any).id, email: (decoded as any).email };
 
     next();
   } catch (error) {
