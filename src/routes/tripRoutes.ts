@@ -1,11 +1,18 @@
 import { Router } from 'express';
-import { authVefifierMiddleware } from '../middleware/authMiddleware.js';
-import { createTrip, updateTrip } from '../controller/tripController.js';
+import { authVerifierMiddleware } from '../middleware/authMiddleware.js';
+import {
+  createTrip,
+  deleteTrip,
+  getAllTrips,
+  updateTrip,
+} from '../controller/tripController.js';
 
 const router = Router();
 
-router.post('/create', authVefifierMiddleware, createTrip);
-router.put('/update/:id', authVefifierMiddleware, updateTrip);
+router.post('/create', authVerifierMiddleware, createTrip);
+router.put('/update/:id', authVerifierMiddleware, updateTrip);
+router.delete('/delete/:id', authVerifierMiddleware, deleteTrip);
+router.get('/getAll', authVerifierMiddleware, getAllTrips);
 // router.post('/', createUser);
 
 export default router;

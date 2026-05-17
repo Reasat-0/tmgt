@@ -16,8 +16,10 @@ export interface Trip {
   id: number;
   title: string;
   description?: string;
-  start_date: Date;
-  end_date: Date;
+  estimatd_start_date: Date;
+  estimated_end_date: Date;
+  actual_start_date?: Date;
+  actual_end_date?: Date;
   created_by: number;
   currency?: string;
   created_at?: Date;
@@ -32,8 +34,10 @@ export const tripModel = {
     const {
       title,
       description,
-      start_date,
-      end_date,
+      estimatd_start_date,
+      estimated_end_date,
+      actual_start_date,
+      actual_end_date,
       created_by,
       currency,
       invite_code,
@@ -42,12 +46,15 @@ export const tripModel = {
     } = trip;
 
     const dbStatus = statusMap[status || TripStatusEnum.PLANNING];
+    // Remember to add the estimated things...actual things...
     const insertQuery = `insert into trips (title, description, start_date, end_date, created_by, currency, invite_code, budget, status) values ($1, $2, $3, $4, $5, $6, $7, $8, $9) returning *`;
     const queryResult = await query(insertQuery, [
       title,
       description,
-      start_date,
-      end_date,
+      estimatd_start_date,
+      estimated_end_date,
+      actual_start_date,
+      actual_end_date,
       created_by,
       currency,
       invite_code,
@@ -78,8 +85,10 @@ export const tripModel = {
     const queryResult = await query(updateQuery, [
       updateData.title,
       updateData.description,
-      updateData.start_date,
-      updateData.end_date,
+      updateData.estimatd_start_date,
+      updateData.estimated_end_date,
+      updateData.actual_start_date,
+      updateData.actual_end_date,
       updateData.currency,
       updateData.budget,
       statusMap[updateData.status || TripStatusEnum.PLANNING],
@@ -88,11 +97,17 @@ export const tripModel = {
     ]);
     return queryResult.rows[0];
   },
-  // getAllByUserId: async (userId: number): Promise<Trip[]> => {
-  //   const result = await query(
-  //     'SELECT * FROM trips WHERE creator_id = $1 ORDER BY created_at DESC',
-  //     [userId]
-  //   );
-  //   return result.rows;
-  // },
+  delete: async (tripId: number, userId: number): Promise<boolean> => {
+    // user id will be used to check the user is the member of that trip or not
+    const deleteQuery = 'DELETE from trips WHERE id = $1 AND created_by = $2';
+
+    const queryResult = await query(deleteQuery, [tripId, userId]);
+    return (queryResult.rowCount ?? 0) > 0;
+  },
+  // Get all trips of any user
+  getAllTrips: async (): Promise<Trip[]> => {
+    const selectQuery = 'SELECT * FROM trips';
+    const queryResult = await query(selectQuery);
+    return queryResult.rows;
+  },
 };

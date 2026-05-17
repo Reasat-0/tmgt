@@ -14,7 +14,7 @@ export interface AuthRequest extends Request {
   };
 }
 
-export const authVefifierMiddleware = (
+export const authVerifierMiddleware = (
   req: AuthRequest,
   res: Response,
   next: NextFunction
