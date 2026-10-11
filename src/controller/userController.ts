@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { userModel } from '../model/userModel.js';
-import { generateResponse } from '../utils/response.js';
+import { generateResponse } from '../utils/generateResponse.js';
 import { HTTP_BAD_REQUEST } from '../utils/httpStatusCodes.js';
 
 export const ResponseJsonType = {};

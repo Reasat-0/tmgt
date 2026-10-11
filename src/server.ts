@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import userRoutes from './routes/userRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import { errorHandler } from './middleware/errorHandler.js';
 dotenv.config();
 
 const app: Application = express();
@@ -17,6 +18,8 @@ app.use('/api/auth', authRoutes);
 app.use('/', (req, res) => {
   res.send('Welcome to the Tour Manager API');
 });
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 5000;
 

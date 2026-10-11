@@ -4,7 +4,7 @@ import {
   HTTP_BAD_REQUEST,
   HTTP_UNAUTHORIZED,
 } from '../utils/httpStatusCodes.js';
-import { generateResponse } from '../utils/response.js';
+import { generateResponse } from '../utils/generateResponse.js';
 import jwt from 'jsonwebtoken';
 interface AuthRequest extends Request {
   user?: unknown;
