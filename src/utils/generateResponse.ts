@@ -21,7 +21,7 @@ type generateResponseType = {
 };
 export const generateResponse = (params: generateResponseType) => {
   const { message, statusCode, success, data } = params;
-  return {
+  return { 
     data,
     message,
     status: statusCode,

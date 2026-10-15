@@ -1,17 +1,19 @@
 import { Request, Response } from 'express';
 import { query } from '../config/db.js';
 import { userModel } from '../model/userModel.js';
-import { generateResponse } from '../utils/generateResponse.js';
+import { generateResponse, successResponse } from '../utils/generateResponse.js';
 import {
   HTTP_BAD_REQUEST,
   HTTP_CREATED,
   HTTP_INTERNAL_SERVER_ERROR,
+  HTTP_NOT_FOUND,
   HTTP_OK,
   HTTP_UNAUTHORIZED,
 } from '../utils/httpStatusCodes.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { AppError } from '../utils/AppError.js';
+import { ERROR_CODES } from '../utils/errorCodes.js';
 export const register = async (req: Request, res: Response) => {
   try {
     const { email, password, name } = req.body;
@@ -61,19 +63,10 @@ export const register = async (req: Request, res: Response) => {
 };
 
 export const login = async (req: Request, res: Response) => {
-  // try {
-    const { email, password } = req.body;
+    const { email, password } = req.body ?? {};
     // 1. Validate Input - Check if email and password are provided...
-    if (!email || !password) {
-        throw new AppError(HTTP_BAD_REQUEST, 'Email and password are required');
-
-      // return res.status(HTTP_BAD_REQUEST).json(
-      //   generateResponse({
-      //     message: 'Email and password are required',
-      //     statusCode: HTTP_BAD_REQUEST,
-      //     success: false,
-      //   })
-      // );
+    if (typeof email !== 'string' || typeof password !== 'string' || !email.trim() || !password) {
+        throw new AppError(HTTP_BAD_REQUEST, 'Email and password are required', ERROR_CODES.BAD_REQUEST);
     }
     //
     // 2. Checking if user exists with the provided email...
@@ -81,14 +74,7 @@ export const login = async (req: Request, res: Response) => {
 
     // --- If user doesn't exist, return error message...
     if (!user) {
-      throw new AppError(HTTP_UNAUTHORIZED, 'Invalid email or password');
-      // return res.status(HTTP_BAD_REQUEST).json(
-      //   generateResponse({
-      //     message: 'Invalid email or password',
-      //     statusCode: HTTP_BAD_REQUEST,
-      //     success: false,
-      //   })
-      // );
+      throw new AppError(HTTP_UNAUTHORIZED, 'Invalid email or password', ERROR_CODES.INVALID_CREDENTIALS);
     }
 
     // --- If exists then compare the provided password with the stored hashed password...
@@ -97,17 +83,8 @@ export const login = async (req: Request, res: Response) => {
     const isPasswordValid = await bcrypt.compare(password, user.password_hash);
 
     if (!isPasswordValid) {
-      throw new AppError(HTTP_UNAUTHORIZED, 'Invalid email or password');
-
-      // return res.status(HTTP_BAD_REQUEST).json(
-      //   generateResponse({
-      //     message: 'Invalid email or password',
-      //     statusCode: HTTP_BAD_REQUEST,
-      //     success: false,
-      //   })
-      // );
+      throw new AppError(HTTP_UNAUTHORIZED, 'Invalid email or password', ERROR_CODES.INVALID_CREDENTIALS);
     }
-    // node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 
     // 4. JWT Token Generation
     const token = jwt.sign(
@@ -117,33 +94,18 @@ export const login = async (req: Request, res: Response) => {
     );
 
     // Sending token and user info in response
-    res.status(HTTP_OK).json(
-      generateResponse({
-        message: 'Login successful',
-        statusCode: HTTP_OK,
-        success: true,
-        data: {
-          token,
-          user: {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            profile_pic: user.profile_pic,
-          },
+    return res.status(HTTP_OK).json(
+      successResponse("Login successful", {
+        token,
+        user : {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          profile_pic: user.profile_pic,
         },
+
       })
     );
-  // } 
-  // catch (error) {
-  //   console.log('Error in login controller:', error);
-  //   res.status(HTTP_INTERNAL_SERVER_ERROR).json(
-  //     generateResponse({
-  //       message: (error as Error).message,
-  //       statusCode: HTTP_INTERNAL_SERVER_ERROR,
-  //       success: false,
-  //     })
-  //   );
-  // }
 };
 
 export const logout = async (req: Request, res: Response) => {
